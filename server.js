@@ -13,6 +13,8 @@ const authJwtController = require('./auth_jwt');
 const cors = require('cors');
 const User = require('./models/Users');
 const Movie = require("./models/Movies");
+const Review = require("./models/Review");
+
 const PORT = process.env.PORT || 8080
 const app = express();
 
@@ -29,7 +31,7 @@ router.post('/signup', function (req, res) {
     if (!req.body.username || !req.body.password) {
         res.json({success: false, msg: 'Please include both username and password to signup.'})
     } else {
-        var user = new User();
+        let user = new User();
         user.name = req.body.name;
         user.username = req.body.username;
         user.password = req.body.password;
@@ -48,7 +50,7 @@ router.post('/signup', function (req, res) {
 });
 
 router.post('/signin', function (req, res) {
-    var userNew = new User();
+    let userNew = new User();
     userNew.username = req.body.username;
     userNew.password = req.body.password;
 
@@ -62,11 +64,11 @@ router.post('/signin', function (req, res) {
         } else {
             user.comparePassword(userNew.password, function (isMatch) {
                 if (isMatch) {
-                    var userToken = {
+                    let userToken = {
                         id: user.id,
                         username: user.username
                     };
-                    var token = jwt.sign(userToken, process.env.SECRET_KEY);
+                    let token = jwt.sign(userToken, process.env.SECRET_KEY);
                     res.json({success: true, token: 'JWT ' + token});
                 } else {
                     res.status(401).send({success: false, msg: 'Password incorrect!'});
@@ -103,7 +105,6 @@ router.route('/movie')
             }
         });
     })
-    // get ALL movies
     .get(function (req, res) {
             Movie.find(function (err, result) {
                 if (err) res.json({message: "ERROR", error: err});
@@ -119,9 +120,8 @@ router.route('/movie/:title')
             res.json(result);
         })
     })
-
     .delete(authController.isAuthenticated, function (req, res) {
-        var conditions = {title: req.params.title};
+        let conditions = {title: req.params.title};
         Movie.findOne({title: req.body.title}, function (err, found) {
             if (err) {
                 res.json({message: "ERROR: \n", error: err});
@@ -138,7 +138,7 @@ router.route('/movie/:title')
         })
     })
     .put(authJwtController.isAuthenticated, function (req, res) {
-        var conditions = {title: req.params.title};
+        let conditions = {title: req.params.title};
         Movie.findOne({title: req.body.title}, function (err, found) {
             if (err) {
                 res.json({message: "ERROR: \n", error: err});
@@ -154,6 +154,44 @@ router.route('/movie/:title')
             }
         })
     })
+
+
+router.route('/review')
+    // get ALL movies
+    .get(function (req, res) {
+            console.log(req.body);
+            let review = new Review();
+            review.movie = req.body.movie;
+            review.reviewerName = req.body.reviewerName;
+            review.quote = req.body.quote;
+            review.rating = req.body.rating;
+            Movie.find(function (err, result) {
+                if (err) res.json({message: "ERROR", error: err});
+                res.json(result);
+            })
+        }
+    )
+    .post((req, res) => {
+            let newReview = new Review();
+            newReview.movie = req.body.movie;
+            newReview.reviewerName = req.body.reviewerName;
+            newReview.quote = req.body.quote;
+            newReview.rating = req.body.rating;
+
+            if (!req.body.movie || !req.body.reviewerName || !req.body.quote || !req.body.rating) {
+                res.json({success: false, msg: 'All fields must be included to save a movie'})
+            } else {
+                console.log(newReview);
+                newReview.save((err, result) => {
+                    if (err) {
+                        res.json({message: "ERROR", error: err});
+                    } else {
+                        res.json({message: `["${newReview.movie}] review by ${newReview.reviewerName} saved `});
+                    }
+                })
+            }
+        }
+    );
 
 // all other requests
 router.all('*', function (req, res) {
