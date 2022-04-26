@@ -86,6 +86,7 @@ router.route('/movie')
         movie.year = req.body.year;
         movie.genre = req.body.genre;
         movie.actors = req.body.actors;
+        movie.imageURL = req.body.imageURL;
 
         Movie.findOne({title: req.body.title}, function (err, found) {
             if (err) {
@@ -97,7 +98,7 @@ router.route('/movie')
             } else {
                 movie.save(function (err) {
                     if (err) {
-                        res.json({message: "ERROR: ", error: err});
+                        res.json({message: "ERROR", error: err});
                     } else {
                         res.json({message: "Movie is saved to DB"});
                     }
@@ -124,7 +125,7 @@ router.route('/movie/:title')
         let conditions = {title: req.params.title};
         Movie.findOne({title: req.body.title}, function (err, found) {
             if (err) {
-                res.json({message: "ERROR: \n", error: err});
+                res.json({message: "ERROR", error: err});
             } else {
                 Movie.deleteOne(conditions, req.body)
                     .then(mov => {
@@ -141,7 +142,7 @@ router.route('/movie/:title')
         let conditions = {title: req.params.title};
         Movie.findOne({title: req.body.title}, function (err, found) {
             if (err) {
-                res.json({message: "ERROR: \n", error: err});
+                res.json({message: "ERROR", error: err});
             } else {
                 Movie.updateOne(conditions, req.body)
                     .then(mov => {
@@ -179,7 +180,7 @@ router.route('/review')
             newReview.rating = req.body.rating;
 
             if (!req.body.movie || !req.body.reviewerName || !req.body.quote || !req.body.rating) {
-                res.json({success: false, msg: 'All fields must be included to save a movie'})
+                res.json({success: false, msg: 'All fields must be included to save a review'})
             } else {
                 console.log(newReview);
                 newReview.save((err, result) => {
@@ -195,7 +196,7 @@ router.route('/review')
 
 // all other requests
 router.all('*', function (req, res) {
-    res.json({error: 'HTTP Method Not Supported'});
+    res.status(405).json({error: 'HTTP Method Not Supported'});
 });
 
 app.use('/', router);
