@@ -7,7 +7,8 @@ const MovieSchema = new Schema({
     year: {type: String, required: true},
     genre: {type: String, required: true},
     actors: {type: [{actorName: String, characterName: String}], required: true},
-    imageURL: {type: String}
+    imageURL: {type: String},
+    averageRating: {type: Number}
 });
 
 

@@ -87,6 +87,7 @@ router.route('/movie')
         movie.genre = req.body.genre;
         movie.actors = req.body.actors;
         movie.imageURL = req.body.imageURL;
+        movie.averageRating = req.body.averageRating;
 
         Movie.findOne({title: req.body.title}, function (err, found) {
             if (err) {
@@ -158,7 +159,6 @@ router.route('/movie/:title')
 
 
 router.route('/review')
-    // get ALL movies
     .get(function (req, res) {
             console.log(req.body);
             let review = new Review();
@@ -180,7 +180,12 @@ router.route('/review')
             newReview.rating = req.body.rating;
 
             if (!req.body.movie || !req.body.reviewerName || !req.body.quote || !req.body.rating) {
-                res.json({success: false, msg: 'All fields must be included to save a review'})
+                res.json({success: false, msg: 'All fields must be included to save a review'});
+            } else if (Movie.find({title: newReview.movie})) {
+                res.status(400).json({
+                    success: false,
+                    msg: 'Movie does not exist, please create movie before adding review'
+                });
             } else {
                 console.log(newReview);
                 newReview.save((err, result) => {
