@@ -158,7 +158,7 @@ router.route('/movies/:title')
     })
 
 
-router.route('/review')
+router.route('/reviews')
     .get(function (req, res) {
             console.log(req.body);
             let review = new Review();
