@@ -6,7 +6,8 @@ const MovieSchema = new Schema({
     title: {type: String, required: true},
     year: {type: String, required: true},
     genre: {type: String, required: true},
-    actors: {type: [{actorName: String, characterName: String}], required: true}
+    actors: {type: [{actorName: String, characterName: String}], required: true},
+    imageURL: {type: String}
 });
 
 
