@@ -78,7 +78,7 @@ router.post('/signin', function (req, res) {
     })
 });
 
-router.route('/movie')
+router.route('/movies')
     .post(authJwtController.isAuthenticated, function (req, res) {
         console.log(req.body);
         let movie = new Movie();
@@ -115,7 +115,7 @@ router.route('/movie')
         }
     );
 
-router.route('/movie/:title')
+router.route('/movies/:title')
     .get(function (req, res) {
         Movie.find({title: req.params.title}, function (err, result) {
             if (err) res.json({message: "ERROR", error: err});
